@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: ticketing-backend
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+    expose:
+      - "8080"
+
+  frontend:
+    build: ./frontend
+    container_name: ticketing-frontend
+    expose:
+      - "80"
+
+  mysql:
+    image: mysql:8.0
+    container_name: ticketing-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ticket_db
+      TZ: Asia/Seoul
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    container_name: ticketing-redis
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:
+
+# Nginx Proxy Manager가 backend(8080), frontend(80) 컨테이너로 각각 프록시하는 구조.
+# 이 compose 파일은 NPM과 같은 Docker 네트워크 위에서 실행되어야 함.
