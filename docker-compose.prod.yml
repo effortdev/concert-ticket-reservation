@@ -9,14 +9,15 @@ services:
     depends_on:
       - mysql
       - redis
-    expose:
-      - "8080"
+    networks:
+      - internal
 
   frontend:
     build: ./frontend
     container_name: ticketing-frontend
-    expose:
-      - "80"
+    networks:
+      - internal
+      - npm_shared
 
   mysql:
     image: mysql:8.0
@@ -27,16 +28,24 @@ services:
       TZ: Asia/Seoul
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - internal
 
   redis:
     image: redis:7-alpine
     container_name: ticketing-redis
     volumes:
       - redis_data:/data
+    networks:
+      - internal
 
 volumes:
   mysql_data:
   redis_data:
 
-# Nginx Proxy Manager가 backend(8080), frontend(80) 컨테이너로 각각 프록시하는 구조.
-# 이 compose 파일은 NPM과 같은 Docker 네트워크 위에서 실행되어야 함.
+networks:
+  internal:
+    driver: bridge
+  npm_shared:
+    external: true
+    name: npm_default
