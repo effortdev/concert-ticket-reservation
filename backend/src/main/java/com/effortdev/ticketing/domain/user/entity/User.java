@@ -16,6 +16,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    private String password; // LOCAL 로그인 전용 (암호화 저장), OAuth 유저는 null
+
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -27,8 +29,9 @@ public class User {
     private Role role;
 
     @Builder
-    public User(String email, String nickname, AuthProvider provider, String providerId, Role role) {
+    public User(String email, String password, String nickname, AuthProvider provider, String providerId, Role role) {
         this.email = email;
+        this.password = password;
         this.nickname = nickname;
         this.provider = provider;
         this.providerId = providerId;
