@@ -1,0 +1,30 @@
+### 회원가입
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "12345678",
+  "nickname": "테스트"
+}
+
+### 로그인
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "12345678"
+}
+
+### 로그인 실패 테스트 (비밀번호 틀림)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "wrongpassword"
+}
+
+### 헬스체크
+GET http://localhost:8080/api/auth/health

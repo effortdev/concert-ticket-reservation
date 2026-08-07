@@ -1,6 +1,8 @@
 package com.effortdev.ticketing.controller;
 
 import com.effortdev.ticketing.common.response.ApiResponse;
+import com.effortdev.ticketing.domain.user.dto.LoginRequest;
+import com.effortdev.ticketing.domain.user.dto.LoginResponse;
 import com.effortdev.ticketing.domain.user.dto.SignupRequest;
 import com.effortdev.ticketing.domain.user.dto.SignupResponse;
 import com.effortdev.ticketing.domain.user.service.AuthService;
@@ -22,7 +24,11 @@ public class AuthController {
         return ApiResponse.success(authService.signup(request));
     }
 
-    // TODO: POST /api/auth/login - 일반 로그인, JWT 발급
+    @PostMapping("/login")
+    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ApiResponse.success(authService.login(request));
+    }
+
     // TODO: POST /api/auth/reissue - 리프레시 토큰으로 액세스 토큰 재발급
     // OAuth(Google/Kakao)는 Spring Security oauth2Login 흐름으로 별도 처리 예정
 
