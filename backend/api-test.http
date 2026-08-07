@@ -28,3 +28,11 @@ Content-Type: application/json
 
 ### 헬스체크
 GET http://localhost:8080/api/auth/health
+
+### 토큰 없이 요청 (401 예상)
+GET http://localhost:8080/api/auth/me
+
+### 토큰과 함께 요청 (로그인 응답의 accessToken 복사해서 붙여넣기)
+### 토큰과 함께 요청
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODExNDksImV4cCI6MTc4NjA4Mjk0OX0.vFPtGOTHj3lb_y6KuULX0m5J5y3tgK1FoYqVgQKClkjL-yf9PQoqFw4tNibPNjh5

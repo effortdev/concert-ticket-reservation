@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -35,5 +37,12 @@ public class AuthController {
     @GetMapping("/health")
     public ApiResponse<String> health() {
         return ApiResponse.success("ok");
+    }
+
+
+
+    @GetMapping("/me")
+    public ApiResponse<Long> me(@AuthenticationPrincipal Long userId) {
+        return ApiResponse.success(userId);
     }
 }
