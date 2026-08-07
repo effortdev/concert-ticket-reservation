@@ -36,3 +36,21 @@ GET http://localhost:8080/api/auth/me
 ### 토큰과 함께 요청
 GET http://localhost:8080/api/auth/me
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODExNDksImV4cCI6MTc4NjA4Mjk0OX0.vFPtGOTHj3lb_y6KuULX0m5J5y3tgK1FoYqVgQKClkjL-yf9PQoqFw4tNibPNjh5
+
+### 공연 등록 (로그인 토큰 필요)
+POST http://localhost:8080/api/events
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODQ3MTIsImV4cCI6MTc4NjA4NjUxMn0.FU95ucahs8NYsXGeWXpwMOD91GVgwnFI9is96AmoLRCPcdm3NISJzzlAU1onLbek
+
+{
+  "title": "테스트 콘서트",
+  "venue": "잠실 실내체육관",
+  "eventDate": "2026-12-25T19:00:00",
+  "bookingOpenAt": "2026-08-10T10:00:00"
+}
+
+### 공연 조회 (토큰 불필요)
+GET http://localhost:8080/api/events/1
+
+### 공연 목록 (토큰 불필요)
+GET http://localhost:8080/api/events
