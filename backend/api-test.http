@@ -40,7 +40,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpY
 ### 공연 등록 (로그인 토큰 필요)
 POST http://localhost:8080/api/events
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODQ3MTIsImV4cCI6MTc4NjA4NjUxMn0.FU95ucahs8NYsXGeWXpwMOD91GVgwnFI9is96AmoLRCPcdm3NISJzzlAU1onLbek
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODU3ODUsImV4cCI6MTc4NjA4NzU4NX0.egh2o1iXVxLO53WACnsehoCgYNf6JQqdKG19GKeJMwQ2ffuSRpIOWUT45gOa3Jc4
 
 {
   "title": "테스트 콘서트",
@@ -54,3 +54,23 @@ GET http://localhost:8080/api/events/1
 
 ### 공연 목록 (토큰 불필요)
 GET http://localhost:8080/api/events
+
+### 테스트용 - 예매 이미 열린 공연 등록
+POST http://localhost:8080/api/events
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODU3ODUsImV4cCI6MTc4NjA4NzU4NX0.egh2o1iXVxLO53WACnsehoCgYNf6JQqdKG19GKeJMwQ2ffuSRpIOWUT45gOa3Jc4
+
+{
+  "title": "즉시예매 테스트",
+  "venue": "테스트장",
+  "eventDate": "2026-12-25T19:00:00",
+  "bookingOpenAt": "2026-08-07T16:00:00"
+}
+
+### 대기열 진입
+POST http://localhost:8080/api/queue/2/enter
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODU3ODUsImV4cCI6MTc4NjA4NzU4NX0.egh2o1iXVxLO53WACnsehoCgYNf6JQqdKG19GKeJMwQ2ffuSRpIOWUT45gOa3Jc4
+
+### 대기열 상태 조회
+GET http://localhost:8080/api/queue/2/status
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODU3ODUsImV4cCI6MTc4NjA4NzU4NX0.egh2o1iXVxLO53WACnsehoCgYNf6JQqdKG19GKeJMwQ2ffuSRpIOWUT45gOa3Jc4

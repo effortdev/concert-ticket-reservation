@@ -1,7 +1,10 @@
 package com.effortdev.ticketing.controller;
 
+import com.effortdev.ticketing.common.response.ApiResponse;
+import com.effortdev.ticketing.domain.queue.dto.QueueStatusResponse;
 import com.effortdev.ticketing.domain.queue.service.QueueService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,6 +14,21 @@ public class QueueController {
 
     private final QueueService queueService;
 
-    // TODO: POST /api/queue/{eventId}/enter - 대기열 진입, 순번 부여
-    // TODO: GET /api/queue/{eventId}/status - 내 순번 조회 (또는 웹소켓 구독으로 대체)
+    @PostMapping("/{eventId}/enter")
+    public ApiResponse<QueueStatusResponse> enterQueue(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        long rank = queueService.enterQueue(eventId, userId);
+        return ApiResponse.success(new QueueStatusResponse(eventId, rank));
+    }
+
+    @GetMapping("/{eventId}/status")
+    public ApiResponse<QueueStatusResponse> getStatus(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        long rank = queueService.getRank(eventId, userId);
+        return ApiResponse.success(new QueueStatusResponse(eventId, rank));
+    }
 }
