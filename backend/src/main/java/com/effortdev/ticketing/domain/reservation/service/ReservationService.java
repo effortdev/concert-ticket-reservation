@@ -4,33 +4,24 @@ import com.effortdev.ticketing.common.exception.CustomException;
 import com.effortdev.ticketing.domain.queue.service.QueueService;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldRequest;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldResponse;
-import com.effortdev.ticketing.domain.reservation.entity.Reservation;
-import com.effortdev.ticketing.domain.reservation.repository.ReservationRepository;
-import com.effortdev.ticketing.domain.seat.entity.Seat;
-import com.effortdev.ticketing.domain.seat.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
 
-    private static final long HOLD_MINUTES = 5;
     private static final long LOCK_WAIT_SECONDS = 3;
 
-    private final SeatRepository seatRepository;
-    private final ReservationRepository reservationRepository;
     private final RedissonClient redissonClient;
     private final QueueService queueService;
+    private final ReservationTransactionalService reservationTransactionalService;
 
-    @Transactional
     public ReservationHoldResponse holdSeat(ReservationHoldRequest request, Long userId) {
 
         if (!queueService.isEntered(request.getEventId(), userId)) {
@@ -52,30 +43,9 @@ public class ReservationService {
         }
 
         try {
-            Seat seat = seatRepository.findById(request.getSeatId())
-                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 좌석입니다."));
-
-            if (!seat.getEventId().equals(request.getEventId())) {
-                throw new CustomException(HttpStatus.BAD_REQUEST, "해당 공연의 좌석이 아닙니다.");
-            }
-
-            try {
-                seat.hold();
-            } catch (IllegalStateException e) {
-                throw new CustomException(HttpStatus.CONFLICT, "이미 선택된 좌석입니다.");
-            }
-
-            LocalDateTime holdExpiresAt = LocalDateTime.now().plusMinutes(HOLD_MINUTES);
-            Reservation reservation = Reservation.builder()
-                    .userId(userId)
-                    .seatId(seat.getId())
-                    .eventId(request.getEventId())
-                    .holdExpiresAt(holdExpiresAt)
-                    .build();
-
-            Reservation saved = reservationRepository.save(reservation);
-            return new ReservationHoldResponse(saved);
-
+            // 이 호출이 리턴됐다는 건, 프록시를 통과한 별도 트랜잭션이 이미 커밋 완료됐다는 뜻.
+            // 그래야 락을 풀어도 다음 스레드가 "최신 커밋된 상태"를 보게 됨.
+            return reservationTransactionalService.holdSeatInTransaction(request, userId);
         } finally {
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
