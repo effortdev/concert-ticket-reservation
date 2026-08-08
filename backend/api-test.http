@@ -195,3 +195,35 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpY
 
 ### 7. (1분 정도 기다린 후) 좌석 상태 재확인 - AVAILABLE로 돌아왔는지 확인
 GET http://localhost:8080/api/events/2/seats
+
+
+### 1. 로그인
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "12345678"
+}
+
+### 2. 대기열 진입 + 입장 완료 (필요 시)
+POST http://localhost:8080/api/queue/2/enter
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYxNjEzODIsImV4cCI6MTc4NjE2MzE4Mn0.SrHdjAcnyRuTacVRl7gTPPV8GiU4HQSO2QGpcmF6EYbLE5YYgwyNJZPAwL-mC_Ff
+
+###
+POST http://localhost:8080/api/queue/2/confirm-entry
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYxNjEzODIsImV4cCI6MTc4NjE2MzE4Mn0.SrHdjAcnyRuTacVRl7gTPPV8GiU4HQSO2QGpcmF6EYbLE5YYgwyNJZPAwL-mC_Ff
+
+### 3. 좌석 홀딩
+POST http://localhost:8080/api/reservations/hold
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYxNjEzODIsImV4cCI6MTc4NjE2MzE4Mn0.SrHdjAcnyRuTacVRl7gTPPV8GiU4HQSO2QGpcmF6EYbLE5YYgwyNJZPAwL-mC_Ff
+
+{
+  "eventId": 2,
+  "seatId": 5
+}
+
+### 4. 결제 확정 (90% 확률로 성공, 안 되면 몇 번 더 시도)
+POST http://localhost:8080/api/reservations/7/confirm
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYxNjEzODIsImV4cCI6MTc4NjE2MzE4Mn0.SrHdjAcnyRuTacVRl7gTPPV8GiU4HQSO2QGpcmF6EYbLE5YYgwyNJZPAwL-mC_Ff

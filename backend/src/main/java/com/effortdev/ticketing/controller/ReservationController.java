@@ -1,6 +1,7 @@
 package com.effortdev.ticketing.controller;
 
 import com.effortdev.ticketing.common.response.ApiResponse;
+import com.effortdev.ticketing.domain.reservation.dto.ReservationConfirmResponse;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldRequest;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldResponse;
 import com.effortdev.ticketing.domain.reservation.service.ReservationService;
@@ -22,5 +23,13 @@ public class ReservationController {
             @AuthenticationPrincipal Long userId
     ) {
         return ApiResponse.success(reservationService.holdSeat(request, userId));
+    }
+
+    @PostMapping("/{reservationId}/confirm")
+    public ApiResponse<ReservationConfirmResponse> confirmReservation(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        return ApiResponse.success(reservationService.confirmReservation(reservationId, userId));
     }
 }

@@ -36,6 +36,9 @@ public class Reservation {
     }
 
     public void confirm() {
+        if (this.status != Status.HOLDING) {
+            throw new IllegalStateException("홀딩 상태가 아닌 예약은 확정할 수 없습니다.");
+        }
         this.status = Status.CONFIRMED;
     }
 
