@@ -25,6 +25,8 @@ services:
   frontend:
     build: ./frontend
     container_name: ticketing-frontend
+    depends_on:
+      - backend
     networks:
       - internal
       - npm_shared

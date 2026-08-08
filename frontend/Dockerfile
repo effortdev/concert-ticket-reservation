@@ -9,7 +9,8 @@ FROM nginx:alpine
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
-RUN echo 'server { \
+RUN echo 'resolver 127.0.0.11 valid=10s; \
+server { \
     listen 80; \
     \
     location / { \
@@ -19,7 +20,8 @@ RUN echo 'server { \
     } \
     \
     location /api/ { \
-        proxy_pass http://backend:8080; \
+        set $backend_upstream backend; \
+        proxy_pass http://$backend_upstream:8080; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
@@ -27,7 +29,8 @@ RUN echo 'server { \
     } \
     \
     location /oauth2/ { \
-        proxy_pass http://backend:8080; \
+        set $backend_upstream backend; \
+        proxy_pass http://$backend_upstream:8080; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
@@ -35,7 +38,8 @@ RUN echo 'server { \
     } \
     \
     location /login/ { \
-        proxy_pass http://backend:8080; \
+        set $backend_upstream backend; \
+        proxy_pass http://$backend_upstream:8080; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
@@ -43,7 +47,8 @@ RUN echo 'server { \
     } \
     \
     location /ws/ { \
-        proxy_pass http://backend:8080; \
+        set $backend_upstream backend; \
+        proxy_pass http://$backend_upstream:8080; \
         proxy_http_version 1.1; \
         proxy_set_header Upgrade $http_upgrade; \
         proxy_set_header Connection "upgrade"; \
