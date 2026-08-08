@@ -46,4 +46,11 @@ public class Reservation {
     public enum Status {
         HOLDING, CONFIRMED, CANCELED, EXPIRED
     }
+
+    public void expire() {
+        if (this.status != Status.HOLDING) {
+            throw new IllegalStateException("홀딩 상태가 아닌 예약은 만료 처리할 수 없습니다.");
+        }
+        this.status = Status.EXPIRED;
+    }
 }
