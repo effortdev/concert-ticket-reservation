@@ -1,10 +1,13 @@
 package com.effortdev.ticketing.config;
 
 import com.effortdev.ticketing.security.jwt.JwtAuthenticationFilter;
+import com.effortdev.ticketing.security.oauth.CustomOAuth2UserService;
+import com.effortdev.ticketing.security.oauth.OAuth2LoginSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,8 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -21,6 +22,8 @@ import org.springframework.http.HttpMethod;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -33,7 +36,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/health", "/ws/**").permitAll()
+                        .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/health", "/ws/**", "/oauth2/**", "/login/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -44,8 +47,11 @@ public class SecurityConfig {
                             response.getWriter().write("{\"success\":false,\"data\":null,\"message\":\"인증이 필요합니다.\"}");
                         })
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2LoginSuccessHandler)
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        // TODO: .oauth2Login(...)
 
         return http.build();
     }

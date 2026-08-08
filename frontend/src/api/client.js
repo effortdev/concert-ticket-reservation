@@ -7,7 +7,22 @@ const apiClient = axios.create({
   },
 })
 
-// TODO: 요청 인터셉터 - localStorage/메모리에서 accessToken 꺼내 Authorization 헤더에 추가
-// TODO: 응답 인터셉터 - 401 발생 시 /api/auth/reissue 호출 후 재시도
+// 로그인 시 발급받은 토큰을 메모리에 보관 (새로고침하면 사라짐 - 지금 스코프에서는 충분)
+let accessToken = null
+
+export function setAccessToken(token) {
+  accessToken = token
+}
+
+export function getAccessToken() {
+  return accessToken
+}
+
+apiClient.interceptors.request.use((config) => {
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
+  }
+  return config
+})
 
 export default apiClient
