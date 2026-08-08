@@ -14,12 +14,11 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class QueueService {
 
+    private static final long ENTRY_BATCH_SIZE = 10; // 한 번에 입장 허용할 인원
+
     private final RedisTemplate<String, String> redisTemplate;
     private final EventRepository eventRepository;
 
-    /**
-     * 대기열 진입. 이미 진입한 유저면 기존 순번을 그대로 반환한다 (중복 진입 방지).
-     */
     public long enterQueue(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 공연입니다."));
@@ -31,23 +30,15 @@ public class QueueService {
         String queueKey = queueKey(eventId);
         String member = String.valueOf(userId);
 
-        // 원자적 순번 발급 (INCR)
         Long sequence = redisTemplate.opsForValue().increment(sequenceKey(eventId));
-
-        // ZADD NX: 이미 대기열에 있으면 score를 덮어쓰지 않고 false 반환
         Boolean added = redisTemplate.opsForZSet().addIfAbsent(queueKey, member, sequence);
 
         if (Boolean.FALSE.equals(added)) {
-            // 이미 진입한 유저 -> 기존 순번 그대로 반환
             return getRank(eventId, userId);
         }
-
         return getRank(eventId, userId);
     }
 
-    /**
-     * 현재 순번 조회 (1부터 시작하는 순번으로 변환해서 반환)
-     */
     public long getRank(Long eventId, Long userId) {
         String member = String.valueOf(userId);
         Long rank = redisTemplate.opsForZSet().rank(queueKey(eventId), member);
@@ -55,16 +46,39 @@ public class QueueService {
         if (rank == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "대기열에 진입하지 않았습니다.");
         }
-
-        return rank + 1; // ZRANK는 0부터 시작하므로 +1
+        return rank + 1;
     }
 
-    /**
-     * 현재 대기 인원 수
-     */
     public long getQueueSize(Long eventId) {
         Long size = redisTemplate.opsForZSet().zCard(queueKey(eventId));
         return size == null ? 0 : size;
+    }
+
+    /**
+     * 현재 입장 허용된 순번(커서)을 조회한다. 아직 한 번도 진행 안 됐으면 0.
+     */
+    public long getAllowedRank(Long eventId) {
+        String value = redisTemplate.opsForValue().get(allowedKey(eventId));
+        return value == null ? 0 : Long.parseLong(value);
+    }
+
+    /**
+     * 허용 순번을 배치 크기만큼 전진시킨다. 대기열 크기를 넘지 않도록 캡을 씌운다.
+     * @return 전진 후의 허용 순번. 변화가 없었다면 이전 값과 동일.
+     */
+    public long advanceQueue(Long eventId) {
+        long queueSize = getQueueSize(eventId);
+        if (queueSize == 0) {
+            return getAllowedRank(eventId);
+        }
+
+        long current = getAllowedRank(eventId);
+        long next = Math.min(current + ENTRY_BATCH_SIZE, queueSize);
+
+        if (next != current) {
+            redisTemplate.opsForValue().set(allowedKey(eventId), String.valueOf(next));
+        }
+        return next;
     }
 
     private String queueKey(Long eventId) {
@@ -73,5 +87,9 @@ public class QueueService {
 
     private String sequenceKey(Long eventId) {
         return "queue:seq:" + eventId;
+    }
+
+    private String allowedKey(Long eventId) {
+        return "queue:allowed:" + eventId;
     }
 }

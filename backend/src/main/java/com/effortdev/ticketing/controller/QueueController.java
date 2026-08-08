@@ -31,4 +31,9 @@ public class QueueController {
         long rank = queueService.getRank(eventId, userId);
         return ApiResponse.success(new QueueStatusResponse(eventId, rank));
     }
+
+    @GetMapping("/{eventId}/allowed")
+    public ApiResponse<Long> getAllowedRank(@PathVariable Long eventId) {
+        return ApiResponse.success(queueService.getAllowedRank(eventId));
+    }
 }

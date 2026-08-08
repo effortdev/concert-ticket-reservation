@@ -69,8 +69,12 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpY
 
 ### 대기열 진입
 POST http://localhost:8080/api/queue/2/enter
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODU3ODUsImV4cCI6MTc4NjA4NzU4NX0.egh2o1iXVxLO53WACnsehoCgYNf6JQqdKG19GKeJMwQ2ffuSRpIOWUT45gOa3Jc4
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYxNTI5NjYsImV4cCI6MTc4NjE1NDc2Nn0.HcpClhxOqx4UnzsuWZ2f9IDoOtBvUWGIcAKQxooiKH5CdRTkhMoPaBJhXbmMykfu
 
 ### 대기열 상태 조회
 GET http://localhost:8080/api/queue/2/status
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYwODU3ODUsImV4cCI6MTc4NjA4NzU4NX0.egh2o1iXVxLO53WACnsehoCgYNf6JQqdKG19GKeJMwQ2ffuSRpIOWUT45gOa3Jc4
+
+### 허용 순번 확인
+GET http://localhost:8080/api/queue/2/allowed
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODYxNTI5NjYsImV4cCI6MTc4NjE1NDc2Nn0.HcpClhxOqx4UnzsuWZ2f9IDoOtBvUWGIcAKQxooiKH5CdRTkhMoPaBJhXbmMykfu
