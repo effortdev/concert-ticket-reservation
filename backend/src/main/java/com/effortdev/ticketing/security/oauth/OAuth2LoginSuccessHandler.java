@@ -4,6 +4,7 @@ import com.effortdev.ticketing.security.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private static final String FRONTEND_CALLBACK_URL = "http://localhost:5173/oauth/callback";
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -28,7 +30,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String accessToken = jwtTokenProvider.createAccessToken(userId, "USER");
         String refreshToken = jwtTokenProvider.createRefreshToken(userId);
 
-        String redirectUrl = UriComponentsBuilder.fromUriString(FRONTEND_CALLBACK_URL)
+        String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/oauth/callback")
                 .queryParam("accessToken", accessToken)
                 .queryParam("refreshToken", refreshToken)
                 .build().toUriString();

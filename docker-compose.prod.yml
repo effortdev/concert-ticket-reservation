@@ -13,6 +13,7 @@ services:
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      FRONTEND_URL: https://concert-ticketing.duckdns.org
     depends_on:
       mysql:
         condition: service_healthy

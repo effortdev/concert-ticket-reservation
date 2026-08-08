@@ -61,3 +61,6 @@ jwt:
 logging:
   level:
     com.effortdev.ticketing: debug
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}

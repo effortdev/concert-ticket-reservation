@@ -119,7 +119,7 @@ export default function LoginPage() {
                     </div>
 
 
-                    <a href="http://localhost:8080/oauth2/authorization/google"
+                    <a href="/oauth2/authorization/google"
                     className="w-full flex items-center justify-center gap-2 bg-bg border border-border hover:bg-surface-hover text-text text-sm font-medium rounded-lg py-2.5 transition"
                     >
                     <svg width="16" height="16" viewBox="0 0 24 24">
