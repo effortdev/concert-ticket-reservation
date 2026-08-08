@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.effortdev.ticketing.domain.user.dto.UserMeResponse;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -40,9 +41,8 @@ public class AuthController {
     }
 
 
-
     @GetMapping("/me")
-    public ApiResponse<Long> me(@AuthenticationPrincipal Long userId) {
-        return ApiResponse.success(userId);
+    public ApiResponse<UserMeResponse> me(@AuthenticationPrincipal Long userId) {
+        return ApiResponse.success(authService.getMe(userId));
     }
 }

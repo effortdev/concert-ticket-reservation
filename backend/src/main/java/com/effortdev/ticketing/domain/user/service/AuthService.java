@@ -1,10 +1,7 @@
 package com.effortdev.ticketing.domain.user.service;
 
 import com.effortdev.ticketing.common.exception.CustomException;
-import com.effortdev.ticketing.domain.user.dto.LoginRequest;
-import com.effortdev.ticketing.domain.user.dto.LoginResponse;
-import com.effortdev.ticketing.domain.user.dto.SignupRequest;
-import com.effortdev.ticketing.domain.user.dto.SignupResponse;
+import com.effortdev.ticketing.domain.user.dto.*;
 import com.effortdev.ticketing.domain.user.entity.User;
 import com.effortdev.ticketing.domain.user.repository.UserRepository;
 import com.effortdev.ticketing.security.jwt.JwtTokenProvider;
@@ -53,5 +50,11 @@ public class AuthService {
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
         return new LoginResponse(accessToken, refreshToken, user.getId(), user.getNickname());
+    }
+
+    public UserMeResponse getMe(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
+        return new UserMeResponse(user);
     }
 }

@@ -7,6 +7,7 @@ import com.effortdev.ticketing.domain.seat.service.SeatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class SeatController {
     private final SeatService seatService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<SeatResponse>> generateSeats(
             @PathVariable Long eventId,
             @Valid @RequestBody SeatGenerateRequest request

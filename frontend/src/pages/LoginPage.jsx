@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import apiClient, { setAccessToken } from '../api/client.js'
+import apiClient, {setAccessToken, setCurrentUser} from '../api/client.js'
 
 export default function LoginPage() {
     const navigate = useNavigate()
@@ -32,7 +32,9 @@ export default function LoginPage() {
                 password: form.password,
             })
             setAccessToken(res.data.data.accessToken)
-            navigate('/events')
+            const me = await apiClient.get('/auth/me')
+            setCurrentUser(me.data.data)
+            navigate(me.data.data.role === 'ADMIN' ? '/admin/events' : '/events')
         } catch (err) {
             const message = err.response?.data?.message || '문제가 발생했습니다. 다시 시도해주세요.'
             setError(message)

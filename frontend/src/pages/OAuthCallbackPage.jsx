@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { setAccessToken } from '../api/client.js'
+import apiClient, {setAccessToken, setCurrentUser} from '../api/client.js'
 
 export default function OAuthCallbackPage() {
     const [searchParams] = useSearchParams()
@@ -8,13 +8,15 @@ export default function OAuthCallbackPage() {
 
     useEffect(() => {
         const accessToken = searchParams.get('accessToken')
-
-        if (accessToken) {
-            setAccessToken(accessToken)
-            navigate('/events')
-        } else {
+        if (!accessToken) {
             navigate('/')
+            return
         }
+        setAccessToken(accessToken)
+        apiClient.get('/auth/me').then((res) => {
+            setCurrentUser(res.data.data)
+            navigate(res.data.data.role === 'ADMIN' ? '/admin/events' : '/events')
+        })
     }, [searchParams, navigate])
 
     return (
