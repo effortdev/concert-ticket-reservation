@@ -36,4 +36,15 @@ public class QueueController {
     public ApiResponse<Long> getAllowedRank(@PathVariable Long eventId) {
         return ApiResponse.success(queueService.getAllowedRank(eventId));
     }
+
+    @PostMapping("/{eventId}/confirm-entry")
+    public ApiResponse<Void> confirmEntry(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        queueService.confirmEntry(eventId, userId);
+        return ApiResponse.success(null);
+    }
+
+
 }

@@ -44,7 +44,6 @@ public class SecurityConfig {
                             response.getWriter().write("{\"success\":false,\"data\":null,\"message\":\"인증이 필요합니다.\"}");
                         })
                 )
-
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         // TODO: .oauth2Login(...)
 

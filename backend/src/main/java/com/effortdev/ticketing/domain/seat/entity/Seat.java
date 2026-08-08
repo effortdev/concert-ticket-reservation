@@ -44,4 +44,19 @@ public class Seat {
     public enum Status {
         AVAILABLE, HOLDING, SOLD
     }
+
+    public void hold() {
+        if (this.status != Status.AVAILABLE) {
+            throw new IllegalStateException("이미 선점되었거나 판매된 좌석입니다.");
+        }
+        this.status = Status.HOLDING;
+    }
+
+    public void release() {
+        this.status = Status.AVAILABLE;
+    }
+
+    public void sell() {
+        this.status = Status.SOLD;
+    }
 }

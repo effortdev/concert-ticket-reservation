@@ -9,12 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class QueueService {
 
-    private static final long ENTRY_BATCH_SIZE = 10; // 한 번에 입장 허용할 인원
+    private static final long ENTRY_BATCH_SIZE = 10;
+    private static final long ENTRY_SESSION_MINUTES = 10; // 입장 완료 후 예매 유효 시간
 
     private final RedisTemplate<String, String> redisTemplate;
     private final EventRepository eventRepository;
@@ -31,11 +33,8 @@ public class QueueService {
         String member = String.valueOf(userId);
 
         Long sequence = redisTemplate.opsForValue().increment(sequenceKey(eventId));
-        Boolean added = redisTemplate.opsForZSet().addIfAbsent(queueKey, member, sequence);
+        redisTemplate.opsForZSet().addIfAbsent(queueKey, member, sequence);
 
-        if (Boolean.FALSE.equals(added)) {
-            return getRank(eventId, userId);
-        }
         return getRank(eventId, userId);
     }
 
@@ -54,18 +53,11 @@ public class QueueService {
         return size == null ? 0 : size;
     }
 
-    /**
-     * 현재 입장 허용된 순번(커서)을 조회한다. 아직 한 번도 진행 안 됐으면 0.
-     */
     public long getAllowedRank(Long eventId) {
         String value = redisTemplate.opsForValue().get(allowedKey(eventId));
         return value == null ? 0 : Long.parseLong(value);
     }
 
-    /**
-     * 허용 순번을 배치 크기만큼 전진시킨다. 대기열 크기를 넘지 않도록 캡을 씌운다.
-     * @return 전진 후의 허용 순번. 변화가 없었다면 이전 값과 동일.
-     */
     public long advanceQueue(Long eventId) {
         long queueSize = getQueueSize(eventId);
         if (queueSize == 0) {
@@ -81,6 +73,30 @@ public class QueueService {
         return next;
     }
 
+    /**
+     * 대기열 순번이 허용 범위 안이면 "입장 완료"로 기록한다.
+     * 입장 기록은 TTL을 둬서, 일정 시간 안에 예매를 완료하지 않으면 자동 만료된다.
+     */
+    public void confirmEntry(Long eventId, Long userId) {
+        long myRank = getRank(eventId, userId);
+        long allowedRank = getAllowedRank(eventId);
+
+        if (myRank > allowedRank) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "아직 입장 순서가 아닙니다.");
+        }
+
+        redisTemplate.opsForSet().add(enteredKey(eventId), String.valueOf(userId));
+        redisTemplate.expire(enteredKey(eventId), ENTRY_SESSION_MINUTES, TimeUnit.MINUTES);
+    }
+
+    /**
+     * 이 유저가 입장 완료 상태인지 확인한다. 좌석 홀딩 API에서 사용.
+     */
+    public boolean isEntered(Long eventId, Long userId) {
+        Boolean isMember = redisTemplate.opsForSet().isMember(enteredKey(eventId), String.valueOf(userId));
+        return Boolean.TRUE.equals(isMember);
+    }
+
     private String queueKey(Long eventId) {
         return "queue:" + eventId;
     }
@@ -91,5 +107,9 @@ public class QueueService {
 
     private String allowedKey(Long eventId) {
         return "queue:allowed:" + eventId;
+    }
+
+    private String enteredKey(Long eventId) {
+        return "queue:entered:" + eventId;
     }
 }

@@ -1,7 +1,12 @@
 package com.effortdev.ticketing.controller;
 
-import com.effortdev.ticketing.domain.reservation.repository.ReservationRepository;
+import com.effortdev.ticketing.common.response.ApiResponse;
+import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldRequest;
+import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldResponse;
+import com.effortdev.ticketing.domain.reservation.service.ReservationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,9 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ReservationController {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationService reservationService;
 
-    // TODO: POST /api/reservations/hold - 좌석 임시 선점 (Redis TTL + Redisson 분산 락)
-    // TODO: POST /api/reservations/{id}/confirm - Mock 결제 승인 후 예매 확정
-    // TODO: DELETE /api/reservations/{id} - 예매 취소
+    @PostMapping("/hold")
+    public ApiResponse<ReservationHoldResponse> holdSeat(
+            @Valid @RequestBody ReservationHoldRequest request,
+            @AuthenticationPrincipal Long userId
+    ) {
+        return ApiResponse.success(reservationService.holdSeat(request, userId));
+    }
 }
