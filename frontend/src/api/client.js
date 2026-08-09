@@ -7,8 +7,8 @@ const apiClient = axios.create({
   },
 })
 
-// 로그인 시 발급받은 토큰을 메모리에 보관 (새로고침하면 사라짐 - 지금 스코프에서는 충분)
 let accessToken = null
+let currentUser = null
 
 export function setAccessToken(token) {
   accessToken = token
@@ -18,15 +18,6 @@ export function getAccessToken() {
   return accessToken
 }
 
-apiClient.interceptors.request.use((config) => {
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`
-  }
-  return config
-})
-
-let currentUser = null
-
 export function setCurrentUser(user) {
   currentUser = user
 }
@@ -34,5 +25,17 @@ export function setCurrentUser(user) {
 export function getCurrentUser() {
   return currentUser
 }
+
+export function logout() {
+  accessToken = null
+  currentUser = null
+}
+
+apiClient.interceptors.request.use((config) => {
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
+  }
+  return config
+})
 
 export default apiClient

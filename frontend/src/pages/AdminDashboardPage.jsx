@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import apiClient from '../api/client.js'
+import Header from '../components/Header.jsx'
 
 export default function AdminDashboardPage() {
     const [events, setEvents] = useState([])
@@ -71,6 +72,7 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="min-h-screen bg-bg px-4 py-10">
+            <Header />
             <div className="max-w-2xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div>

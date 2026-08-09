@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import apiClient from '../api/client.js'
+import Header from '../components/Header.jsx'
 
 export default function AdminEventsPage() {
     const [events, setEvents] = useState([])
@@ -53,6 +54,7 @@ export default function AdminEventsPage() {
 
     return (
         <div className="min-h-screen bg-bg px-4 py-10">
+            <Header />
             <div className="max-w-2xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div>
