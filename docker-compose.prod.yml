@@ -14,6 +14,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       FRONTEND_URL: https://concert-ticketing.duckdns.org
+      TZ: Asia/Seoul
     depends_on:
       mysql:
         condition: service_healthy
