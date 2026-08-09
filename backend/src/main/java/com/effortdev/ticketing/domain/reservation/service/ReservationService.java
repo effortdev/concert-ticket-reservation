@@ -5,6 +5,7 @@ import com.effortdev.ticketing.domain.queue.service.QueueService;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationConfirmResponse;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldRequest;
 import com.effortdev.ticketing.domain.reservation.dto.ReservationHoldResponse;
+import com.effortdev.ticketing.domain.reservation.dto.ReservationSummaryResponse;
 import com.effortdev.ticketing.domain.reservation.entity.Reservation;
 import com.effortdev.ticketing.domain.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -81,5 +83,11 @@ public class ReservationService {
         if (lock.isHeldByCurrentThread()) {
             lock.unlock();
         }
+    }
+
+    public List<ReservationSummaryResponse> getMyReservations(Long userId) {
+        return reservationRepository.findByUserId(userId).stream()
+                .map(ReservationSummaryResponse::new)
+                .toList();
     }
 }

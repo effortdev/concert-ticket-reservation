@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import apiClient from '../api/client.js'
+import Header from '../components/Header.jsx'
 
 export default function ReservationResultPage() {
     const { id } = useParams()
@@ -22,6 +23,7 @@ export default function ReservationResultPage() {
 
     return (
         <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+            <Header />
             <div className="w-full max-w-sm text-center">
 
                 {status === 'idle' && (

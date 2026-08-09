@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import apiClient from '../api/client.js'
+import Header from '../components/Header.jsx'
 
 export default function QueuePage() {
     const { eventId } = useParams()
@@ -65,6 +66,7 @@ export default function QueuePage() {
 
     return (
         <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+            <Header />
             <div className="w-full max-w-sm text-center">
                 <p className="text-xs font-display tracking-widest text-text-muted mb-3">
                     {status.toUpperCase()}

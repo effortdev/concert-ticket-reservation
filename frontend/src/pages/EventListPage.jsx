@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../api/client.js'
+import Header from '../components/Header.jsx'
 
 export default function EventListPage() {
     const navigate = useNavigate()
@@ -20,6 +21,7 @@ export default function EventListPage() {
 
     return (
         <div className="min-h-screen bg-bg px-4 py-10">
+            <Header />
             <div className="max-w-md mx-auto">
                 <h1 className="font-display text-2xl font-semibold text-text mb-1">예매 가능한 공연</h1>
                 <p className="text-text-muted text-sm mb-8">원하는 공연을 선택하면 대기열에 진입합니다</p>

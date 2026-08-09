@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import apiClient from '../api/client.js'
+import Header from '../components/Header.jsx'
 
 const GRADE_ORDER = ['VIP', 'R', 'S']
 const GRADE_COLOR = {
@@ -52,6 +53,7 @@ export default function SeatSelectPage() {
 
     return (
         <div className="min-h-screen bg-bg px-4 py-10">
+            <Header />
             <div className="max-w-md mx-auto">
                 <h1 className="font-display text-2xl font-semibold text-text mb-1">좌석을 선택하세요</h1>
                 <p className="text-text-muted text-sm mb-6">선택 즉시 5분간 임시 예약됩니다</p>

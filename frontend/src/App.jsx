@@ -7,6 +7,7 @@ import ReservationResultPage from './pages/ReservationResultPage.jsx'
 import OAuthCallbackPage from './pages/OAuthCallbackPage.jsx'
 import AdminEventsPage from './pages/AdminEventsPage.jsx'
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
+import MyReservationsPage from './pages/MyReservationsPage.jsx'
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/reservations/:id/result" element={<ReservationResultPage />} />
                 <Route path="/admin/events" element={<AdminEventsPage />} />
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                <Route path="/reservations/my" element={<MyReservationsPage />} />
             </Routes>
         </BrowserRouter>
     )
