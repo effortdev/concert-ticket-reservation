@@ -45,6 +45,8 @@ public class ReservationConfirmTransactionalService {
         reservationRepository.findById(reservationId).ifPresent(reservation -> {
             if (reservation.getStatus() == Reservation.Status.HOLDING) {
                 reservation.expire();
+                seatRepository.findById(reservation.getSeatId())
+                        .ifPresent(Seat::release);
             }
         });
     }
